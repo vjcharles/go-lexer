@@ -30,7 +30,7 @@ type StateFn func(*Lexer) StateFn
 
 // A type for building lexers.
 type Lexer struct {
-	input string     // string being scanned
+	Input string     // string being scanned
 	start int        // start position for the current lexeme
 	pos   int        // current position
 	width int        // length of the last rune read
@@ -46,7 +46,7 @@ func New(start StateFn, input string) *Lexer {
 	}
 	return &Lexer{
 		state: start,
-		input: input,
+		Input: input,
 		items: list.New(),
 	}
 }
@@ -63,7 +63,7 @@ func (l *Lexer) Pos() int {
 
 // The contents of the item currently being lexed.
 func (l *Lexer) Current() string {
-	return l.input[l.start:l.pos]
+	return l.Input[l.start:l.pos]
 }
 
 // The last rune read from the input stream.
@@ -75,11 +75,11 @@ func (l *Lexer) Last() (r rune, width int) {
 // codepoints cause the current call and all subsequent calls to return
 // (utf8.RuneError, 1).
 func (l *Lexer) Advance() (rune, int) {
-	if l.pos >= len(l.input) {
+	if l.pos >= len(l.Input) {
 		l.width = 0
 		return EOF, l.width
 	}
-	l.last, l.width = utf8.DecodeRuneInString(l.input[l.pos:])
+	l.last, l.width = utf8.DecodeRuneInString(l.Input[l.pos:])
 	if l.last == utf8.RuneError && l.width == 1 {
 		return l.last, l.width
 	}
@@ -150,7 +150,7 @@ func (l *Lexer) Emit(t ItemType) {
 	l.enqueue(&Item{
 		t,
 		l.start,
-		l.input[l.start:l.pos],
+		l.Input[l.start:l.pos],
 	})
 	l.start = l.pos
 }
